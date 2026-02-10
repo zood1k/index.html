@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - Инжекторы | Полное руководство</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #13131a;
+            --bg-card: #1a1a24;
+            --accent-primary: #ff2d75;
+            --accent-secondary: #00d9ff;
+            --accent-glow: rgba(255, 45, 117, 0.3);
+            --text-primary: #ffffff;
+            --text-secondary: #a8a8b8;
+            --border: #2a2a38;
+            --success: #00ff88;
+            --warning: #ffaa00;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f5f5f7;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --accent-primary: #ff2d75;
+            --accent-secondary: #0080ff;
+            --accent-glow: rgba(255, 45, 117, 0.15);
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --border: #e0e0e0;
+            --success: #00cc66;
+            --warning: #ff9500;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+            position: relative;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255, 45, 117, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(0, 217, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(180deg);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 40px;
+        }
+
+        .main-content {
+            animation: slideInLeft 0.8s ease;
+        }
+
+        .header {
+            text-align: left;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 2px;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-top: 20px;
+            font-weight: 400;
+        }
+
+        .author-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 2px solid var(--accent-primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .author-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .author-badge::before {
+            content: '👤';
+            font-size: 1.2rem;
+        }
+
+        .faq-section {
+            margin-bottom: 40px;
+            animation: fadeIn 0.6s ease;
+            animation-fill-mode: both;
+        }
+
+        .faq-section:nth-child(1) { animation-delay: 0.1s; }
+        .faq-section:nth-child(2) { animation-delay: 0.2s; }
+        .faq-section:nth-child(3) { animation-delay: 0.3s; }
+        .faq-section:nth-child(4) { animation-delay: 0.4s; }
+        .faq-section:nth-child(5) { animation-delay: 0.5s; }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            padding: 15px 20px;
+            background: var(--bg-card);
+            border-left: 5px solid var(--accent-primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .section-title:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .faq-item {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .faq-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            opacity: 0.1;
+            transition: width 0.4s ease;
+        }
+
+        .faq-item:hover::before {
+            width: 100%;
+        }
+
+        .faq-item:hover {
+            border-color: var(--accent-primary);
+            box-shadow: 0 8px 30px var(--accent-glow);
+            transform: translateY(-2px);
+        }
+
+        .faq-question {
+            padding: 24px 28px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            user-select: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .faq-question .icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .faq-item.active .faq-question .icon {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            position: relative;
+            z-index: 1;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 800px;
+            padding: 0 28px 24px 28px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-left: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .badge.free {
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+            color: #000;
+        }
+
+        .badge.paid {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: #fff;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        li {
+            margin: 10px 0;
+            position: relative;
+        }
+
+        li::marker {
+            color: var(--accent-primary);
+        }
+
+        strong {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        code {
+            background: rgba(255, 45, 117, 0.15);
+            color: var(--accent-primary);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            border: 1px solid rgba(255, 45, 117, 0.3);
+        }
+
+        /* Anime Character Sidebar */
+        .sidebar {
+            position: sticky;
+            top: 30px;
+            height: fit-content;
+            animation: slideInRight 0.8s ease;
+        }
+
+        .character-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .character-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 45, 117, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        .character-image {
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border: 3px solid var(--accent-primary);
+            box-shadow: 0 0 30px var(--accent-glow);
+            transition: transform 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .character-card:hover .character-image {
+            transform: scale(1.05);
+        }
+
+        .character-info {
+            position: relative;
+            z-index: 1;
+        }
+
+        .character-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .character-info p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .stats {
+            margin-top: 20px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .stat-item {
+            background: var(--bg-secondary);
+            padding: 12px;
+            border-radius: 10px;
+            border-left: 3px solid var(--accent-primary);
+            text-align: left;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            }
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: relative;
+                top: 0;
+                order: -1;
+            }
+
+            .character-card {
+                max-width: 400px;
+                margin: 0 auto 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .theme-toggle {
+                top: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .section-title {
+                font-size: 1.4rem;
+                padding: 12px 16px;
+            }
+
+            .faq-question {
+                font-size: 1rem;
+                padding: 20px 20px;
+            }
+
+            .faq-item.active .faq-answer {
+                padding: 0 20px 20px 20px;
+            }
+
+            .container {
+                padding: 40px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        🌙
+    </button>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="header">
+                <h1>FAQ об Инжекторах</h1>
+                <p class="subtitle">Полное руководство по версиям и возможностям</p>
+                <div class="author-badge">Автор: @zood3llotgk</div>
+            </div>
+
+            <div class="faq-section">
+                <h2 class="section-title">📱 Версии для телефона</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Что такое мобильные инжекторы?</span>
+                        <span class="icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Мобильные инжекторы — это специализированные приложения для смартфонов на iOS и Android, которые позволяют внедрять код в игры и приложения на мобильных устройствах. Они оптимизированы для работы на ограниченных ресурсах телефона и полностью бесплатны.
+                        <ul>
+                            <li><strong>Delta (Main site)</strong> — основная версия, доступная для скачивания с официального сайта</li>
+                            <li><strong>Delta (iOS)</strong> — оптимизированная версия для устройств Apple (iPhone, iPad)</li>
+                            <li><strong>Codex (Android)</strong> — версия для Android-устройств с широкой совместимостью</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>В чем разница между Delta для iOS и основного сайта?</span>
+                        <span class="icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Функционально обе версии идентичны и предоставляют одинаковый набор возможностей. Основное отличие заключается в методе установки:
+                        <br><br>
+                        <strong>Delta (Main site):</strong> требует дополнительных шагов, таких как установка сертификатов или использование сторонних магазинов приложений.
+                        <br><br>
+                        <strong>Delta (iOS):</strong> специально скомпилирована для прямой установки на iOS-устройства с минимальными дополнительными действиями.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Безопасно ли использовать мобильные инжекторы?</span>
+                        <span class="icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Использование инжекторов всегда несет определенные риски, включая возможную блокировку аккаунта в игре. Мобильные версии разработаны с учетом максимальной скрытности, но 100% гарантии безопасности не существует. Всегда используйте на свой страх и риск.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-section">
+                <h2 class="section-title">💻 PC Free (Бесплатные версии)</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Что включает PC Free? <span class="badge free">Free</span></span>
+                        <span class="icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        PC Free — это категория полностью бесплатных инжекторов для Windows, которые не требуют оплаты, подписки или донатов. Идеальны для новичков и тех, кто хочет протестировать возможности инжекторов.
+                        <ul>
+                            <li><strong>Xeno</strong> — легкий и стабильный инжектор с базовым функционалом, отличается высокой скоростью работы</li>
+                            <li><strong>Solara</strong> — продвинутая бесплатная версия с расширенными возможностями и улучшенным интерфейсом</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Какие ограничения у бесплатных версий?</span>
+                        <span class="icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Бесплатные версии имеют некоторые ограничения по сравнению с платными:
+                        <ul>
+                            <li>Базовый набор функций (без премиум возможностей)</li>
+                            <li>Возможны рекламные баннеры или задержки при запуске</li>
+                            <li>Менее агрессивная защита от обнаружения</li>
+                            <li>Ограниченная техподдержка</li>
+                            <li>Может работать медленнее платных аналогов</li>
+                        </ul>
+                        Однако для большинства задач бесплатные версии вполне достаточны.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-section">
+                <h2 class="section-title">🔒 PC Internal (Внутренние платные)</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Что означает "Internal"? <span class="badge paid">Paid</span></span>
+                        <span class="icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>Internal</strong> (внутренний) — это метод работы инжектора, при котором код встраивается непосредственно в процесс целевого приложения или игры. Это наиболее продвинутый и безопасный способ инъекции.
+                        <br><br>
+                        <strong>Преимущества Internal-метода:</strong>
+                        <ul>
+                            <li><strong>Максимальная скрытность:</strong> код работает внутри процесса, что затрудняет обнаружение античитами</li>
+                            <li><strong>Высокая стабильность:</strong> прямой доступ к памяти обеспечивает надежную работу без сбоев</li>
+                            <li><strong>Низкая детектируемость:</strong> меньше следов в системе, сложнее отследить антивирусами</li>
+                            <li><strong>Прямой доступ:</strong> полный контроль над процессом и его памятью</li>
+                            <li><strong>Быстродействие:</strong> минимальные задержки при выполнении операций</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Какие версии входят в PC Internal?</span>
+                        <span class="icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <ul>
+                            <li><strong>NeverFall</strong> — премиум инжектор с максимальной надежностью и защитой. Считается эталоном качества, регулярно обновляется</li>
+                            <li><strong>Potassium</strong> — сбалансированная версия, сочетающая хорошую производительность и доступную цену</li>
+                            <li><strong>Bunni</strong> — легкая внутренняя версия с упрощенным интерфейсом, подходит для начинающих пользователей платных версий</li>
+                        </ul>
+                        Все версии требуют единоразовой покупки или подписки и предоставляют доступ к премиум-функциям.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Сложно ли пользоваться Internal инжекторами?</span>
+                        <span class="icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Internal инжекторы требуют чуть больше технических знаний, чем External, но большинство современных версий имеют интуитивный интерфейс. Обычно процесс выглядит так:
+                        <ul>
+                            <li>Запуск инжектора от имени администратора</li>
+                            <li>Выбор целевого процесса</li>
+                            <li>Загрузка нужного скрипта</li>
+                            <li>Инъекция одним кликом</li>
+                        </ul>
+                        К каждому платному инжектору прилагается подробная инструкция и видео-гайды.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-section">
+                <h2 class="section-title">🌐 PC External (Внешние платные)</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Что означает "External"? <span class="badge paid">Paid</span></span>
+                        <span class="icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>External</strong> (внешний) — это метод работы инжектора, при котором программа работает как отдельный независимый процесс и взаимодействует с целевым приложением извне, используя API операционной системы.
+                        <br><br>
+                        <strong>Особенности External-метода:</strong>
+                        <ul>
+                            <li><strong>Простота использования:</strong> не требует глубоких технических знаний, подходит для новичков</li>
+                            <li><strong>Независимость:</strong> работает как отдельное приложение, что упрощает отладку и обновление</li>
+                            <li><strong>Универсальность:</strong> легче адаптируется под разные игры и приложения</li>
+                            <li><strong>Безопасность системы:</strong> в случае сбоя не влияет на целевой процесс</li>
+                            <li><strong>Видимость:</strong> может быть более заметен для систем защиты (главный недостаток)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Какие версии входят в PC External?</span>
+                        <span class="icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <ul>
+                            <li><strong>Yerba</strong> — мощный внешний инжектор с продвинутыми функциями обхода защиты и стабильной работой</li>
+                            <li><strong>Matcha</strong> — оптимизированная внешняя версия, известная своей скоростью и простым интерфейсом</li>
+                        </ul>
+                        Обе версии платные, регулярно обновляются и предлагают надежную работу через внешний метод инъекции. Подходят тем, кто ценит удобство использования.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>External безопаснее или Internal?</span>
+                        <span class="icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        С точки зрения обнаружения античитами — <strong>Internal безопаснее</strong>, так как он работает внутри процесса и оставляет меньше следов.
+                        <br><br>
+                        С точки зрения стабильности системы — <strong>External безопаснее</strong>, потому что сбой инжектора не приведет к краху целевой программы.
+                        <br><br>
+                        Выбор зависит от ваших приоритетов: если важна скрытность — выбирайте Internal, если важна простота и надежность — External.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-section">
+                <h2 class="section-title">❓ Общие вопросы</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Таблица сравнения: Internal vs External</span>
+                        <span class="icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>🔒 INTERNAL (Внутренний метод):</strong>
+                        <ul>
+                            <li>✅ Встраивается прямо в процесс игры</li>
+                            <li>✅ Максимально сложно обнаружить античитом</li>
+                            <li>✅ Высочайшая стабильность работы функций</li>
+                            <li>✅ Прямой доступ ко всей памяти процесса</li>
+                            <li>❌ Требует больше технических знаний</li>
+                            <li>❌ Сложнее в настройке для новичков</li>
+                        </ul>
+                        <br>
+                        <strong>🌐 EXTERNAL (Внешний метод):</strong>
+                        <ul>
+                            <li>✅ Работает как отдельная программа</li>
+                            <li>✅ Очень прост в использовании</li>
+                            <li>✅ Понятный интерфейс для новичков</li>
+                            <li>✅ Быстрая настройка и запуск</li>
+                            <li>❌ Легче обнаруживается защитными системами</li>
+                            <li>❌ Может быть заметен для античитов</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Какой инжектор выбрать новичку?</span>
+                        <span class="icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>Рекомендации по выбору:</strong>
+                        <ul>
+                            <li><strong>Полный новичок</strong> → Начните с бесплатных версий <code>Xeno</code> или <code>Solara</code> для понимания принципов работы</li>
+                            <li><strong>Только мобильные устройства</strong> → <code>Delta (iOS)</code> для iPhone или <code>Codex</code> для Android</li>
+                            <li><strong>Нужна максимальная защита от банов</strong> → Internal версии: <code>NeverFall</code> или <code>Potassium</code></li>
+                            <li><strong>Важна простота</strong> → External версии: <code>Yerba</code> или <code>Matcha</code></li>
+                            <li><strong>Ограниченный бюджет</strong> → Бесплатные PC версии: <code>Xeno</code>, <code>Solara</code></li>
+                            <li><strong>Серьезное использование</strong> → Premium Internal: <code>NeverFall</code></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Можно ли использовать несколько инжекторов одновременно?</span>
+                        <span class="icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <strong>Категорически не рекомендуется!</strong> Одновременное использование нескольких инжекторов на одном устройстве может привести к:
+                        <ul>
+                            <li>Конфликтам между процессами</li>
+                            <li>Крашам игры или системы</li>
+                            <li>Нестабильной работе обоих инжекторов</li>
+                            <li>Повышенному риску обнаружения</li>
+                            <li>Возможной порче файлов игры</li>
+                        </ul>
+                        Выберите один инжектор, который лучше всего подходит для ваших целей, и работайте только с ним.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Как приобрести платные версии?</span>
+                        <span class="icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Платные инжекторы (Internal и External) можно приобрести несколькими способами:
+                        <ul>
+                            <li><strong>Официальные сайты</strong> — прямая покупка через сайт разработчика (самый надежный способ)</li>
+                            <li><strong>Discord серверы</strong> — многие разработчики продают лицензии через свои серверы в Discord</li>
+                            <li><strong>Реселлеры</strong> — проверенные продавцы, но будьте осторожны с мошенниками</li>
+                        </ul>
+                        <br>
+                        <strong>После покупки вы получаете:</strong>
+                        <ul>
+                            <li>Ссылку на скачивание последней версии</li>
+                            <li>Лицензионный ключ для активации</li>
+                            <li>Доступ к приватному Discord каналу поддержки</li>
+                            <li>Инструкции по установке и использованию</li>
+                            <li>Регулярные обновления на период подписки</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Законно ли использование инжекторов?</span>
+                        <span class="icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Использование инжекторов находится в серой зоне:
+                        <br><br>
+                        <strong>Юридически:</strong> В большинстве стран использование инжекторов не является уголовным преступлением, но может нарушать условия использования программного обеспечения.
+                        <br><br>
+                        <strong>Со стороны игр:</strong> Практически все онлайн-игры запрещают использование любых модификаций и читов в своих пользовательских соглашениях. Нарушение может привести к перманентному бану аккаунта.
+                        <br><br>
+                        <strong>Рекомендация:</strong> Используйте инжекторы исключительно на свой страх и риск, в образовательных целях или в одиночных играх. Автор не несет ответственности за ваши действия.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="character-card">
+                <img src="https://i.pinimg.com/736x/c0/6d/55/c06d55f4562e67e1074500fd42e3afd2.jpg" alt="Anime Character" class="character-image">
+                <div class="character-info">
+                    <h3>Помощник</h3>
+                    <p>Я помогу тебе разобраться со всеми вопросами об инжекторах! Просто читай FAQ внимательно 💜</p>
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Всего версий</div>
+                        <div class="stat-value">9</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Бесплатных</div>
+                        <div class="stat-value">5</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Premium</div>
+                        <div class="stat-value">4</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // FAQ Accordion
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const item = question.parentElement;
+                const wasActive = item.classList.contains('active');
+                
+                // Опционально: закрыть другие элементы (удалите, если хотите открывать несколько)
+                // document.querySelectorAll('.faq-item').forEach(otherItem => {
+                //     otherItem.classList.remove('active');
+                // });
+                
+                if (wasActive) {
+                    item.classList.remove('active');
+                } else {
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        
+        // Проверяем сохраненную тему
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+        themeToggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            themeToggle.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+        });
+    </script>
+</body>
+</html>
